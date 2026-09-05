@@ -1,0 +1,10 @@
+ITINERE! — PWA GitHub Pages
+
+File principali:
+- index.html
+- manifest.webmanifest
+- service-worker.js
+- icons/
+
+Nota: URL Apps Script e chiave API NON sono inclusi nei file pubblici.
+Vanno inseriti dall'utente nelle Impostazioni dell'app sul singolo dispositivo.

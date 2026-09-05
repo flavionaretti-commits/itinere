@@ -1,0 +1,1431 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#111426">
+<title>ITINERE!</title>
+<meta name="application-name" content="ITINERE!">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ITINERE!">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32.png">
+<style>
+:root{
+  --bg:#0d1020;
+  --panel:#171b31;
+  --panel2:#11152a;
+  --text:#f7f8ff;
+  --muted:#aeb5d5;
+  --line:#2f365e;
+  --accent:#8c7dff;
+  --good:#5bd99b;
+  --warn:#ffd166;
+  --bad:#ff6b6b;
+  --shadow:0 18px 55px rgba(0,0,0,.35);
+}
+body.light{
+  --bg:#dfe5f1;
+  --panel:#edf1f8;
+  --panel2:#e7ecf5;
+  --text:#182033;
+  --muted:#5f6980;
+  --line:#c5cddd;
+  --accent:#6657e8;
+  --good:#1eaa70;
+  --warn:#b98308;
+  --bad:#d94a59;
+  --shadow:0 16px 40px rgba(45,58,95,.16);
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--text)}
+body{
+ background:
+ radial-gradient(circle at 20% 0%,rgba(124,99,255,.16),transparent 28rem),
+ linear-gradient(160deg,#0a0d19,#12162a 65%,#0a0d19);
+ transition:background .25s ease,color .25s ease;
+}
+body.light{
+ background:
+ radial-gradient(circle at 15% 0%,rgba(110,92,255,.14),transparent 26rem),
+ linear-gradient(160deg,#e8edf6,#dce3ef 70%,#e6ebf4);
+}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.app{min-height:100vh;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+.topbar{
+ position:sticky;top:0;z-index:20;
+ display:flex;align-items:center;gap:12px;
+ padding:12px 16px;
+ background:rgba(10,13,25,.88);
+ backdrop-filter:blur(18px);
+ border-bottom:1px solid rgba(255,255,255,.06)
+}
+body.light .topbar{
+ background:rgba(230,235,245,.93);
+ border-bottom-color:rgba(70,80,120,.14)
+}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.logo{
+ width:42px;height:42px;border-radius:13px;
+ display:grid;place-items:center;font-weight:950;
+ background:linear-gradient(135deg,#ff5f6d,#ffcc66,#4ed69a,#4fbef3,#8b6cf6);
+ color:#101325;
+ box-shadow:0 0 28px rgba(140,125,255,.34);
+ position:relative;overflow:hidden
+}
+.logo::after{
+ content:"";
+ position:absolute;inset:-40%;
+ background:linear-gradient(110deg,transparent 42%,rgba(255,255,255,.7) 50%,transparent 58%);
+ transform:translateX(-50%) rotate(8deg);
+ animation:shine 5s ease-in-out infinite
+}
+@keyframes shine{
+ 0%,72%{transform:translateX(-60%) rotate(8deg)}
+ 100%{transform:translateX(60%) rotate(8deg)}
+}
+.brand h1{font-size:1.25rem;margin:0;letter-spacing:.4px}
+.brand small{display:block;color:var(--muted);font-size:.72rem;margin-top:2px}
+.spacer{flex:1}
+.iconbtn{
+ width:42px;height:42px;border:1px solid var(--line);border-radius:13px;
+ background:var(--panel);color:var(--text);font-size:1.15rem
+}
+.syncicon{
+ position:relative;
+ display:grid;
+ place-items:center;
+ overflow:visible
+}
+.syncarrow{
+ display:inline-block;
+ line-height:1;
+ transform-origin:50% 50%
+}
+.syncdot{
+ position:absolute;
+ width:9px;height:9px;border-radius:50%;
+ right:5px;bottom:5px;
+ background:#7f869f;
+ border:1.5px solid rgba(255,255,255,.9);
+ box-shadow:0 0 0 2px rgba(10,13,25,.7)
+}
+body.light .syncdot{
+ border-color:#fff;
+ box-shadow:0 0 0 2px rgba(247,249,254,.92)
+}
+.syncicon.syncing .syncarrow{
+ animation:syncspin .8s linear infinite
+}
+.syncicon.syncing .syncdot{
+ background:#ffd166;
+ box-shadow:0 0 0 2px rgba(10,13,25,.7),0 0 12px #ffd166;
+ animation:dotblink .75s ease-in-out infinite
+}
+body.light .syncicon.syncing .syncdot{
+ box-shadow:0 0 0 2px rgba(247,249,254,.92),0 0 12px #d9a500
+}
+.syncicon.synced .syncdot{
+ background:#5bd99b;
+ box-shadow:0 0 0 2px rgba(10,13,25,.7),0 0 10px #5bd99b
+}
+.syncicon.pending .syncdot{
+ background:#ff9f43;
+ box-shadow:0 0 0 2px rgba(10,13,25,.7),0 0 10px #ff9f43;
+ animation:dotblink 1.1s ease-in-out infinite
+}
+.syncicon.error .syncdot{
+ background:#ff6b6b;
+ box-shadow:0 0 0 2px rgba(10,13,25,.7),0 0 10px #ff6b6b
+}
+.syncicon.unconfigured .syncdot{
+ background:#7f869f
+}
+@keyframes syncspin{to{transform:rotate(360deg)}}
+@keyframes dotblink{0%,100%{opacity:1}50%{opacity:.28}}
+.wrap{width:min(1180px,100%);margin:0 auto;padding:18px}
+.hero{
+ background:linear-gradient(145deg,rgba(124,99,255,.16),rgba(31,38,72,.72));
+ border:1px solid rgba(255,255,255,.08);
+ border-radius:24px;padding:22px;box-shadow:var(--shadow);margin-bottom:18px
+}
+.hero h2{margin:0 0 6px;font-size:clamp(1.6rem,4vw,2.4rem)}
+.hero p{margin:0;color:var(--muted)}
+.syncrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:15px;align-items:center}
+.badge{
+ display:inline-flex;align-items:center;gap:8px;
+ padding:8px 11px;border:1px solid var(--line);border-radius:999px;
+ background:#11152a;color:var(--muted);font-size:.86rem
+}
+.dot{width:9px;height:9px;border-radius:50%;background:#7f869f}
+.badge.ok .dot{background:var(--good);box-shadow:0 0 10px var(--good)}
+.badge.warn .dot{background:var(--warn);box-shadow:0 0 10px var(--warn)}
+.badge.bad .dot{background:var(--bad);box-shadow:0 0 10px var(--bad)}
+.homegrid{
+ display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px
+}
+.classcard{
+ background:linear-gradient(160deg,#191e38,#12162b);
+ border:1px solid rgba(255,255,255,.07);border-radius:22px;padding:18px;
+ box-shadow:var(--shadow);
+ transition:transform .18s ease,border-color .18s ease
+}
+.classcard:hover{transform:translateY(-2px);border-color:rgba(140,125,255,.35)}
+body.light .classcard{
+ background:linear-gradient(160deg,#eef2f8,#e4e9f2);
+ border-color:#cbd3e1
+}
+.classcard h3{font-size:2rem;margin:0 0 12px}
+.subjects{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.subject{
+ border:0;border-radius:16px;padding:16px 12px;color:#fff;font-weight:850;
+ letter-spacing:.2px;box-shadow:inset 0 1px rgba(255,255,255,.16)
+}
+.subject.mat{background:linear-gradient(145deg,#5967ff,#844dff)}
+.subject.sci{background:linear-gradient(145deg,#0ba87b,#18b7c7)}
+.sectionView{display:none}
+.sectionHead{
+ display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px
+}
+.backbtn,.actionbtn{
+ border:1px solid var(--line);background:var(--panel);color:var(--text);
+ border-radius:13px;padding:10px 13px;font-weight:750
+}
+.actionbtn.primary{background:#6255db;border-color:#7569eb}
+.actionbtn.danger{background:#4b2330;border-color:#74354a}
+.sectionTitle{flex:1;min-width:180px}
+.sectionTitle h2{margin:0;font-size:1.55rem}
+.sectionTitle small{color:var(--muted)}
+.list{
+ display:flex;flex-direction:column;gap:9px
+}
+.student{
+ display:grid;
+ grid-template-columns:42px minmax(170px,1.25fr) 50px minmax(170px,1fr) 72px 50px;
+ gap:9px;align-items:center;
+ padding:10px;
+ border-radius:17px;
+ background:linear-gradient(145deg,rgba(26,31,57,.98),rgba(17,21,42,.98));
+ border:1px solid rgba(255,255,255,.065);
+ transition:transform .14s ease,border-color .14s ease,background .2s ease
+}
+.num{
+ width:38px;height:38px;border-radius:11px;display:grid;place-items:center;
+ background:#0f1326;border:1px solid var(--line);color:#c8cee8;font-weight:850
+}
+body.light .num,
+body.light .grade,
+body.light .pm,
+body.light .iconbtn,
+body.light .actionbtn,
+body.light .backbtn{
+ background:#e6ebf4;color:#1c2438
+}
+.name{
+ width:100%;min-width:0;border:1px solid transparent;border-radius:11px;
+ padding:10px 11px;background:transparent;color:var(--text);
+ font-weight:700;outline:none
+}
+.name::placeholder{color:#69708d}
+.name.editing{background:#0e1224;border-color:#566196}
+.pm{
+ width:48px;height:44px;border:1px solid var(--line);border-radius:13px;
+ background:#10152a;color:#fff;font-weight:900;font-size:1.28rem
+}
+.pm:active{transform:scale(.96)}
+.meterbox{min-width:0}
+.track{
+ position:relative;height:13px;border-radius:999px;
+ background:#0c1020;border:1px solid rgba(255,255,255,.08);overflow:visible
+}
+.track::before{
+ content:"";position:absolute;inset:-3px;border-radius:999px;
+ border:1px solid rgba(255,255,255,.035);pointer-events:none
+}
+body.light .track{background:#cfd6e3;border-color:#bcc5d5}
+.fill{
+ height:100%;width:0;border-radius:999px;
+ background:hsl(0 90% 58%);
+ box-shadow:0 0 9px currentColor,0 0 20px currentColor,0 0 34px currentColor;
+ transition:width .22s ease, background .22s ease;
+ position:relative
+}
+.fill::after{
+ content:"";position:absolute;right:-3px;top:50%;transform:translateY(-50%);
+ width:8px;height:8px;border-radius:50%;background:#fff;
+ box-shadow:0 0 8px #fff,0 0 13px currentColor
+}
+.scale{
+ display:flex;justify-content:space-between;color:#69708d;font-size:.66rem;margin-top:4px
+}
+.grade{
+ text-align:center;font-size:1.13rem;font-weight:900;
+ padding:9px 7px;border-radius:12px;background:#10152a;border:1px solid var(--line);
+ white-space:nowrap
+}
+.grade.lode{
+ color:#fff5c3;
+ text-shadow:0 0 8px #d89cff,0 0 15px #9d76ff;
+ box-shadow:0 0 18px rgba(157,118,255,.22) inset
+}
+.empty{text-align:center;padding:30px;color:var(--muted)}
+.modalback{
+ position:fixed;inset:0;z-index:50;background:rgba(4,6,14,.74);
+ display:none;place-items:center;padding:18px
+}
+.modal{
+ width:min(620px,100%);max-height:90vh;overflow:auto;
+ background:#171b31;border:1px solid var(--line);border-radius:22px;padding:20px;
+ box-shadow:0 30px 80px rgba(0,0,0,.55)
+}
+.modal h3{margin:0 0 6px;font-size:1.4rem}
+.modal p{color:var(--muted);line-height:1.45}
+.field{margin:14px 0}
+.field label{display:block;margin-bottom:6px;font-weight:750}
+.field input{
+ width:100%;border:1px solid var(--line);border-radius:12px;padding:12px;
+ background:#0e1224;color:#fff
+}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.row>*{flex:1}
+.modalActions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px;flex-wrap:wrap}
+.small{font-size:.8rem;color:var(--muted)}
+.backupbox{
+  margin-top:18px;padding-top:16px;border-top:1px solid var(--line)
+}
+.backupbox h4{margin:0 0 6px;font-size:1rem}
+.backupbox p{margin:0 0 12px;color:var(--muted);font-size:.88rem}
+.backupActions{display:flex;gap:10px;flex-wrap:wrap}
+.backupActions button{flex:1;min-width:160px}
+.toast{
+ position:fixed;left:50%;bottom:24px;z-index:80;transform:translateX(-50%) translateY(120px);
+ background:#0d1122;border:1px solid var(--line);color:#fff;border-radius:999px;
+ padding:11px 16px;box-shadow:var(--shadow);transition:transform .25s ease;
+ max-width:90vw;text-align:center
+}
+.toast.show{transform:translateX(-50%) translateY(0)}
+body.light .hero{
+ background:linear-gradient(145deg,rgba(108,91,232,.12),rgba(229,234,244,.88));
+ border-color:#cbd3e1
+}
+body.light .student{
+ background:linear-gradient(145deg,#e9eef6,#dfe5ef);
+ border-color:#c8d0df
+}
+body.light .badge{background:#e7ecf4}
+body.light .modal{background:#e9eef6}
+body.light .status{background:#e2e8f2}
+body.light .field input,
+body.light .name.editing{background:#f3f6fb;color:#182033}
+body.light .name{color:#182033}
+body.light .name::placeholder{color:#9aa3b8}
+
+.projection{
+  position:fixed;
+  inset:0;
+  z-index:120;
+  display:none;
+  background:
+    radial-gradient(circle at 50% -15%,rgba(140,125,255,.16),transparent 34rem),
+    linear-gradient(160deg,#080b15,#101528 68%,#080b15);
+  color:#f7f8ff;
+  padding:10px 14px 12px;
+}
+.projection.active{
+  display:flex;
+  flex-direction:column;
+}
+.projHead{
+  height:58px;
+  flex:0 0 58px;
+  display:flex;
+  align-items:center;
+  gap:14px;
+  border-bottom:1px solid rgba(255,255,255,.09);
+  padding-bottom:8px;
+}
+.projTitle{
+  flex:1;
+  min-width:0;
+}
+.projTitle h2{
+  margin:0;
+  font-size:clamp(1.25rem,2.4vw,2rem);
+  letter-spacing:.2px;
+}
+.projTitle small{
+  color:#aeb5d5;
+  font-size:.78rem;
+}
+.projControls{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+.projCheck{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 10px;
+  border:1px solid rgba(255,255,255,.14);
+  border-radius:11px;
+  background:#12182b;
+  color:#eef1ff;
+  font-weight:750;
+  font-size:.88rem;
+  white-space:nowrap;
+}
+.projCheck input{
+  width:18px;
+  height:18px;
+  accent-color:#8c7dff;
+}
+.projExit{
+  border:1px solid rgba(255,255,255,.16);
+  background:#181e35;
+  color:#fff;
+  border-radius:12px;
+  padding:10px 14px;
+  font-weight:850;
+  white-space:nowrap;
+}
+.projRows{
+  --count:25;
+  height:calc(100dvh - 80px);
+  flex:1 1 auto;
+  min-height:0;
+  display:grid;
+  grid-template-rows:repeat(var(--count),minmax(0,1fr));
+  gap:3px;
+  padding-top:7px;
+}
+.projRow{
+  min-height:0;
+  display:grid;
+  grid-template-columns:44px minmax(0,1fr) 72px;
+  gap:10px;
+  align-items:center;
+  padding:1px 9px;
+  border-radius:8px;
+  background:rgba(255,255,255,.035);
+  border:1px solid rgba(255,255,255,.045);
+}
+.projection.showNames .projRow{
+  grid-template-columns:44px minmax(110px,.85fr) minmax(0,1.4fr) 72px;
+}
+.projName{
+  display:none;
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-size:clamp(.66rem,1.05vw,.92rem);
+  font-weight:760;
+  color:#e9edff;
+}
+.projection.showNames .projName{
+  display:block;
+}
+.projNum{
+  text-align:center;
+  font-weight:900;
+  font-size:clamp(.72rem,1.25vw,1rem);
+  color:#dce1f5;
+}
+.projTrack{
+  position:relative;
+  height:clamp(5px,.85vh,9px);
+  border-radius:999px;
+  background:#080c18;
+  border:1px solid rgba(255,255,255,.08);
+}
+.projFill{
+  height:100%;
+  border-radius:999px;
+  box-shadow:0 0 8px currentColor,0 0 18px currentColor;
+  position:relative;
+}
+.projFill::after{
+  content:"";
+  position:absolute;
+  right:-2px;
+  top:50%;
+  transform:translateY(-50%);
+  width:6px;height:6px;border-radius:50%;
+  background:#fff;
+  box-shadow:0 0 6px #fff,0 0 10px currentColor;
+}
+.projGrade{
+  text-align:center;
+  font-size:clamp(.72rem,1.35vw,1.02rem);
+  font-weight:950;
+  padding:2px 5px;
+  border-radius:8px;
+  background:#11172a;
+  border:1px solid rgba(255,255,255,.09);
+  white-space:nowrap;
+}
+.projGrade.lode{
+  color:#fff2b8;
+  text-shadow:0 0 7px #d89cff,0 0 14px #9d76ff;
+}
+
+@media(max-width:900px){
+ .homegrid{grid-template-columns:1fr}
+ .student{grid-template-columns:38px minmax(130px,1fr) 44px 1fr 68px 44px;gap:6px}
+}
+@media(max-width:680px){
+ .wrap{padding:12px}
+ .hero{padding:17px}
+ .student{
+   grid-template-columns:36px 1fr 42px 66px 42px;
+   grid-template-areas:
+   "num name minus grade plus"
+   ". meter meter meter .";
+   padding:9px 8px;gap:6px
+ }
+ .num{grid-area:num;width:34px;height:38px}
+ .name{grid-area:name;padding:9px 8px}
+ .minus{grid-area:minus}
+ .plus{grid-area:plus}
+ .meterbox{grid-area:meter;padding:0 3px}
+ .grade{grid-area:grade;font-size:1rem;padding:8px 4px}
+ .pm{width:42px;height:40px}
+ .scale{display:none}
+ .subjects{grid-template-columns:1fr 1fr}
+ .topbar{padding:10px 12px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="topbar">
+  <div class="brand">
+    <div class="logo">I!</div>
+    <div>
+      <h1>ITINERE!</h1>
+      <small>Valutazione in itinere</small>
+    </div>
+  </div>
+  <div class="spacer"></div>
+  <button class="iconbtn" id="themeBtn" title="Giorno/Notte">☀</button>
+  <button class="iconbtn" id="soundBtn" title="Suoni">🔊</button>
+  <button class="iconbtn syncicon unconfigured" id="syncBtn" title="Forza sincronizzazione">
+    <span class="syncarrow">↻</span>
+    <span class="syncdot" aria-hidden="true"></span>
+  </button>
+  <button class="iconbtn" id="settingsBtn" title="Impostazioni">⚙</button>
+</header>
+
+<main class="wrap">
+  <section id="homeView">
+    <div class="hero">
+      <h2>Valuta mentre lavori.</h2>
+      <p>6 sezioni · 25 studenti · memoria locale + sincronizzazione cloud</p>
+      <div class="syncrow">
+        <div class="badge" id="syncBadge"><span class="dot"></span><span id="syncText">Cloud non configurato</span></div>
+        <div class="badge"><span>Voto iniziale</span><strong>8</strong></div>
+        <div class="badge"><span>Scala</span><strong>4 → 10 ✦</strong></div>
+      </div>
+    </div>
+    <div class="homegrid" id="homeGrid"></div>
+  </section>
+
+  <section class="sectionView" id="sectionView">
+    <div class="sectionHead">
+      <button class="backbtn" id="backBtn">← Home</button>
+      <div class="sectionTitle">
+        <h2 id="sectionTitle">1B · Matematica</h2>
+        <small id="sectionSub">25 studenti</small>
+      </div>
+      <button class="actionbtn primary" id="projectBtn">▣ PROIETTA</button>
+      <button class="actionbtn" id="editBtn">✎ Modifica nomi</button>
+      <button class="actionbtn danger" id="resetBtn">RESET a 8</button>
+    </div>
+    <div class="list" id="studentList"></div>
+  </section>
+</main>
+</div>
+
+<div class="modalback" id="settingsModal">
+  <div class="modal">
+    <h3>Impostazioni cloud</h3>
+    <p>Inserisci una sola volta su questo dispositivo l’URL della Web App Apps Script e la tua chiave privata.</p>
+    <div class="field">
+      <label>URL Apps Script</label>
+      <input id="apiUrl" type="url" autocomplete="off" placeholder="https://script.google.com/macros/s/…/exec">
+    </div>
+    <div class="field">
+      <label>Chiave API</label>
+      <input id="apiKey" type="password" autocomplete="off" placeholder="Chiave privata">
+    </div>
+    <div class="small">Questi due valori vengono salvati solo nella memoria locale del dispositivo.</div>
+
+    <div class="backupbox">
+      <h4>Numero studenti</h4>
+      <p>Imposta quante righe mostrare per ciascuna classe. Il numero vale sia per Matematica sia per Scienze.</p>
+      <div class="row">
+        <div class="field">
+          <label>1B</label>
+          <input id="size1B" type="number" min="1" max="25" inputmode="numeric">
+        </div>
+        <div class="field">
+          <label>2B</label>
+          <input id="size2B" type="number" min="1" max="25" inputmode="numeric">
+        </div>
+        <div class="field">
+          <label>3B</label>
+          <input id="size3B" type="number" min="1" max="25" inputmode="numeric">
+        </div>
+      </div>
+    </div>
+
+    <div class="backupbox">
+      <h4>Nominativi</h4>
+      <p>Esporta o importa solo gli elenchi dei nomi. I voti e le credenziali cloud non vengono inclusi.</p>
+      <div class="backupActions">
+        <button class="actionbtn" id="exportNamesBtn">⇩ Esporta nomi</button>
+        <button class="actionbtn" id="importNamesBtn">⇧ Importa nomi</button>
+      </div>
+      <input id="importNamesFile" type="file" accept=".json,application/json" hidden>
+    </div>
+
+    <div class="modalActions">
+      <button class="actionbtn" id="closeSettings">Annulla</button>
+      <button class="actionbtn primary" id="saveSettings">Salva e sincronizza</button>
+    </div>
+  </div>
+</div>
+
+<div class="modalback" id="confirmModal">
+  <div class="modal">
+    <h3 id="confirmTitle">Conferma RESET</h3>
+    <p id="confirmText"></p>
+    <div class="modalActions">
+      <button class="actionbtn" id="confirmNo">Annulla</button>
+      <button class="actionbtn danger" id="confirmYes">RESET</button>
+    </div>
+  </div>
+</div>
+
+<div class="projection" id="projectionView" aria-hidden="true">
+  <div class="projHead">
+    <div class="projTitle">
+      <h2 id="projTitle">1B · Matematica</h2>
+      <small id="projSub">Valutazioni · numeri di registro</small>
+    </div>
+    <div class="projControls">
+      <label class="projCheck">
+        <input type="checkbox" id="projShowNames">
+        Mostra i nomi
+      </label>
+      <button class="projExit" id="projExit">ESCI DA PROIEZIONE</button>
+    </div>
+  </div>
+  <div class="projRows" id="projRows"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const CLASSES = ['1B','2B','3B'];
+const SUBJECTS = [
+  {code:'MAT', label:'Matematica', cls:'mat'},
+  {code:'SCI', label:'Scienze', cls:'sci'}
+];
+
+const LS = {
+  names:'itinere_names_v1',
+  cache:'itinere_cache_v1',
+  apiUrl:'itinere_api_url_v1',
+  apiKey:'itinere_api_key_v1',
+  pending:'itinere_pending_v1',
+  theme:'itinere_theme_v1',
+  classSizes:'itinere_class_sizes_v1',
+  sound:'itinere_sound_v1'
+};
+
+let state = {
+  names: loadJson(LS.names, {}),
+  cache: loadJson(LS.cache, {}),
+  pending: loadJson(LS.pending, {}),
+  classSizes: loadJson(LS.classSizes, { '1B':25, '2B':25, '3B':25 }),
+  current: null,
+  editingNames: false,
+  syncing: false
+};
+
+for (const c of CLASSES){
+  const n = Number(state.classSizes[c]);
+  state.classSizes[c] = Number.isInteger(n) && n >= 1 && n <= 25 ? n : 25;
+}
+saveJson(LS.classSizes,state.classSizes);
+
+for (const c of CLASSES){
+  for (const s of SUBJECTS){
+    for (let n=1;n<=25;n++){
+      const id = makeId(c,s.code,n);
+      if (!state.cache[id]) state.cache[id] = {voto:8,lode:false};
+    }
+  }
+}
+saveJson(LS.cache,state.cache);
+
+function makeId(c,s,n){ return `${c}_${s}_${String(n).padStart(2,'0')}`; }
+function makeNameId(c,n){ return `${c}_${String(n).padStart(2,'0')}`; }
+function loadJson(k,fallback){
+  try{ return JSON.parse(localStorage.getItem(k)) ?? fallback; }catch{ return fallback; }
+}
+function saveJson(k,v){ localStorage.setItem(k,JSON.stringify(v)); }
+
+function gradeLabel(item){
+  if (item.lode) return '10 ✦';
+  return String(item.voto).replace('.',',');
+}
+function gradeIndex(item){
+  if (item.lode) return 13;
+  return Math.round((item.voto-4)*2);
+}
+function meter(item){
+  const idx = gradeIndex(item);
+  const max = 13;
+  const pct = 8 + (idx/max)*92;
+  const hue = (idx/max)*280; // rosso -> viola
+  return {pct,hue};
+}
+function setFromIndex(idx){
+  idx = Math.max(0,Math.min(13,idx));
+  if (idx===13) return {voto:10,lode:true};
+  return {voto:4+idx*0.5,lode:false};
+}
+
+
+function applyTheme(){
+  const saved=localStorage.getItem(LS.theme)||'dark';
+  document.body.classList.toggle('light',saved==='light');
+  document.getElementById('themeBtn').textContent=saved==='light'?'☾':'☀';
+  const metaTheme=document.querySelector('meta[name="theme-color"]');
+  if(metaTheme) metaTheme.setAttribute('content',saved==='light'?'#dfe5f1':'#111426');
+}
+function toggleTheme(){
+  const next=document.body.classList.contains('light')?'dark':'light';
+  localStorage.setItem(LS.theme,next);
+  applyTheme();
+}
+
+
+let audioCtx = null;
+
+function soundEnabled(){
+  return (localStorage.getItem(LS.sound) ?? 'on') !== 'off';
+}
+
+function applySoundButton(){
+  const on = soundEnabled();
+  const btn = document.getElementById('soundBtn');
+  btn.textContent = on ? '🔊' : '🔇';
+  btn.title = on ? 'Suoni attivi' : 'Suoni disattivati';
+}
+
+function toggleSound(){
+  const next = soundEnabled() ? 'off' : 'on';
+  localStorage.setItem(LS.sound, next);
+  applySoundButton();
+  if(next === 'on') playClick();
+}
+
+function getAudioCtx(){
+  if(!audioCtx){
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if(!AC) return null;
+    audioCtx = new AC();
+  }
+  if(audioCtx.state === 'suspended'){
+    audioCtx.resume().catch(()=>{});
+  }
+  return audioCtx;
+}
+
+function tone(freq, start, dur, gain=0.035, type='sine'){
+  if(!soundEnabled()) return;
+  const ctx = getAudioCtx();
+  if(!ctx) return;
+
+  const osc = ctx.createOscillator();
+  const g = ctx.createGain();
+
+  osc.type = type;
+  osc.frequency.setValueAtTime(freq, ctx.currentTime + start);
+
+  g.gain.setValueAtTime(0.0001, ctx.currentTime + start);
+  g.gain.exponentialRampToValueAtTime(gain, ctx.currentTime + start + 0.008);
+  g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + start + dur);
+
+  osc.connect(g).connect(ctx.destination);
+  osc.start(ctx.currentTime + start);
+  osc.stop(ctx.currentTime + start + dur + 0.02);
+}
+
+function playClick(){
+  tone(520, 0, 0.045, 0.024, 'sine');
+}
+
+function playUp(){
+  tone(560, 0, 0.06, 0.03, 'triangle');
+  tone(720, 0.045, 0.07, 0.028, 'triangle');
+}
+
+function playDown(){
+  tone(520, 0, 0.06, 0.03, 'triangle');
+  tone(390, 0.045, 0.08, 0.028, 'triangle');
+}
+
+function playLode(){
+  tone(660, 0.00, 0.10, 0.032, 'sine');
+  tone(880, 0.07, 0.12, 0.030, 'sine');
+  tone(1100,0.14, 0.16, 0.028, 'sine');
+  tone(1320,0.22, 0.18, 0.022, 'sine');
+}
+
+function buildHome(){
+  const grid = document.getElementById('homeGrid');
+  grid.innerHTML='';
+  CLASSES.forEach(c=>{
+    const card = document.createElement('article');
+    card.className='classcard';
+    card.innerHTML=`<h3>${c}</h3><div class="small" style="margin:-6px 0 12px">${state.classSizes[c]} studenti</div><div class="subjects"></div>`;
+    const box = card.querySelector('.subjects');
+    SUBJECTS.forEach(s=>{
+      const b=document.createElement('button');
+      b.className=`subject ${s.cls}`;
+      b.textContent=s.label.toUpperCase();
+      b.onclick=()=>{ playClick(); openSection(c,s.code); };
+      box.appendChild(b);
+    });
+    grid.appendChild(card);
+  });
+}
+
+function openSection(classe,materia){
+  state.current={classe,materia};
+  state.editingNames=false;
+  document.getElementById('homeView').style.display='none';
+  document.getElementById('sectionView').style.display='block';
+  const subj=SUBJECTS.find(x=>x.code===materia);
+  document.getElementById('sectionTitle').textContent=`${classe} · ${subj.label}`;
+  document.getElementById('sectionSub').textContent=`${state.classSizes[classe]} studenti`;
+  document.getElementById('editBtn').textContent='✎ Modifica nomi';
+  renderStudents();
+}
+function goHome(){
+  state.current=null;
+  document.getElementById('sectionView').style.display='none';
+  document.getElementById('homeView').style.display='block';
+}
+function renderStudents(){
+  const list=document.getElementById('studentList');
+  list.innerHTML='';
+  const {classe,materia}=state.current;
+  for(let n=1;n<=state.classSizes[classe];n++){
+    const id=makeId(classe,materia,n);
+    const item=state.cache[id] || {voto:8,lode:false};
+    const m=meter(item);
+    const row=document.createElement('div');
+    row.className='student';
+    row.dataset.id=id;
+    row.innerHTML=`
+      <div class="num">${n}</div>
+      <input class="name ${state.editingNames?'editing':''}" value="${escapeHtml(state.names[makeNameId(classe,n)]||'')}" 
+        placeholder="Alunno ${n}" ${state.editingNames?'':'readonly'} aria-label="Nome studente ${n}">
+      <button class="pm minus" aria-label="Diminuisci">−</button>
+      <div class="meterbox">
+        <div class="track"><div class="fill" style="width:${m.pct}%;background:hsl(${m.hue} 90% 58%);color:hsl(${m.hue} 90% 58%)"></div></div>
+        <div class="scale"><span>4</span><span>7</span><span>10 ✦</span></div>
+      </div>
+      <div class="grade ${item.lode?'lode':''}">${gradeLabel(item)}</div>
+      <button class="pm plus" aria-label="Aumenta">+</button>
+    `;
+    const input=row.querySelector('.name');
+    input.addEventListener('change',()=>{
+      const nameId = makeNameId(classe,n);
+      state.names[nameId]=input.value.trim();
+      saveJson(LS.names,state.names);
+      toast('Nome salvato sul dispositivo');
+    });
+    row.querySelector('.minus').onclick=()=>changeGrade(id,-1,row);
+    row.querySelector('.plus').onclick=()=>changeGrade(id,+1,row);
+    list.appendChild(row);
+  }
+}
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+function updateRow(row,id){
+  const item=state.cache[id];
+  const m=meter(item);
+  row.querySelector('.fill').style.width=m.pct+'%';
+  row.querySelector('.fill').style.background=`hsl(${m.hue} 90% 58%)`;
+  row.querySelector('.fill').style.color=`hsl(${m.hue} 90% 58%)`;
+  const grade=row.querySelector('.grade');
+  grade.textContent=gradeLabel(item);
+  grade.classList.toggle('lode',item.lode);
+}
+async function changeGrade(id,delta,row){
+  const cur=state.cache[id] || {voto:8,lode:false};
+  const beforeIndex=gradeIndex(cur);
+  const next=setFromIndex(beforeIndex+delta);
+  const afterIndex=gradeIndex(next);
+
+  // Nessun suono se si prova ad andare oltre i limiti 4 / 10 ✦.
+  if(afterIndex === beforeIndex) return;
+
+  state.cache[id]=next;
+  state.pending[id]=next;
+  saveJson(LS.cache,state.cache);
+  saveJson(LS.pending,state.pending);
+  updateRow(row,id);
+
+  if(next.lode && !cur.lode){
+    playLode();
+  }else if(delta > 0){
+    playUp();
+  }else{
+    playDown();
+  }
+
+  row.animate(
+    [{transform:'scale(1)'},{transform:'scale(1.008)'},{transform:'scale(1)'}],
+    {duration:180,easing:'ease-out'}
+  );
+  queueCloudSet(id,next);
+}
+
+let pendingTimers={};
+function queueCloudSet(id,item){
+  if(pendingTimers[id]) clearTimeout(pendingTimers[id]);
+  pendingTimers[id]=setTimeout(()=>cloudSet(id,item),180);
+}
+function getCfg(){
+  return {
+    url:(localStorage.getItem(LS.apiUrl)||'').trim(),
+    key:(localStorage.getItem(LS.apiKey)||'').trim()
+  };
+}
+function parseId(id){
+  const [classe,materia,num]=id.split('_');
+  return {classe,materia,numero:Number(num)};
+}
+function pendingCount(){
+  return Object.keys(state.pending).length;
+}
+function pendingLabel(){
+  const n=pendingCount();
+  return n===1 ? '1 modifica da sincronizzare' : `${n} modifiche da sincronizzare`;
+}
+async function sendOnePending(id,item){
+  const {url,key}=getCfg();
+  if(!url||!key) throw new Error('Cloud non configurato');
+  const p=parseId(id);
+  const r=await fetch(url,{
+    method:'POST',
+    headers:{'Content-Type':'text/plain;charset=utf-8'},
+    body:JSON.stringify({
+      key,action:'set',
+      classe:p.classe,materia:p.materia,numero:p.numero,
+      voto:item.voto,lode:item.lode
+    }),
+    cache:'no-store'
+  });
+  const j=await r.json();
+  if(!j.ok) throw new Error(j.error||'Errore API');
+  return j;
+}
+async function cloudSet(id,item){
+  const {url,key}=getCfg();
+  if(!url||!key){
+    setSyncStatus('warn',`Salvato sul dispositivo · ${pendingLabel()}`);
+    return;
+  }
+  try{
+    setSyncStatus('warn',`Sincronizzazione… · ${pendingLabel()}`);
+    await sendOnePending(id,item);
+
+    // Cancella dalla coda solo se nel frattempo quel record non è stato cambiato di nuovo.
+    const stillPending=state.pending[id];
+    if(stillPending && Number(stillPending.voto)===Number(item.voto) && !!stillPending.lode===!!item.lode){
+      delete state.pending[id];
+      saveJson(LS.pending,state.pending);
+    }
+
+    if(pendingCount()===0){
+      setSyncStatus('ok','Sincronizzato');
+    }else{
+      setSyncStatus('warn',pendingLabel());
+    }
+  }catch(e){
+    setSyncStatus('bad',`Offline · ${pendingLabel()} · dati locali al sicuro`);
+  }
+}
+async function flushPending(){
+  const entries=Object.entries(state.pending);
+  if(entries.length===0) return 0;
+
+  let done=0;
+  for(const [id,item] of entries){
+    await sendOnePending(id,item);
+
+    const current=state.pending[id];
+    if(current && Number(current.voto)===Number(item.voto) && !!current.lode===!!item.lode){
+      delete state.pending[id];
+      done++;
+    }
+  }
+  saveJson(LS.pending,state.pending);
+  return done;
+}
+async function syncFromCloud(showToast=true){
+  if(state.syncing) return;
+  const {url,key}=getCfg();
+  if(!url||!key){
+    const n=pendingCount();
+    setSyncStatus('warn',n ? `Cloud non configurato · ${pendingLabel()}` : 'Cloud non configurato');
+    if(showToast) openSettings();
+    return;
+  }
+
+  state.syncing=true;
+  const localPending={...state.pending};
+  const hadPending=Object.keys(localPending).length;
+
+  setSyncStatus('warn',hadPending ? `Sincronizzazione… · ${pendingLabel()}` : 'Sincronizzazione…');
+
+  try{
+    // 1) Legge lo stato corrente del cloud.
+    const u=new URL(url);
+    u.searchParams.set('action','load');
+    u.searchParams.set('key',key);
+    const r=await fetch(u.toString(),{cache:'no-store'});
+    const j=await r.json();
+    if(!j.ok) throw new Error(j.error||'Errore API');
+
+    // 2) Aggiorna la cache dal cloud.
+    for(const x of j.data){
+      state.cache[x.id]={voto:Number(x.voto),lode:!!x.lode};
+    }
+
+    // 3) Le modifiche locali non ancora sincronizzate hanno la precedenza.
+    for(const [id,item] of Object.entries(localPending)){
+      state.cache[id]={voto:Number(item.voto),lode:!!item.lode};
+    }
+    saveJson(LS.cache,state.cache);
+    if(state.current){
+      renderStudents();
+      if(document.getElementById('projectionView').classList.contains('active')) renderProjection();
+    }
+
+    // 4) Invia al cloud tutte le modifiche rimaste in coda.
+    const sent=await flushPending();
+
+    if(pendingCount()===0){
+      setSyncStatus('ok',`Sincronizzato · ${new Date().toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'})}`);
+      if(showToast){
+        toast(hadPending ? `Sincronizzato: ${sent} modifiche locali inviate al cloud` : `Ricevute ${j.data.length} posizioni dal cloud`);
+      }
+    }else{
+      setSyncStatus('warn',pendingLabel());
+    }
+  }catch(e){
+    // Ripristina visivamente le modifiche locali se il cloud non è raggiungibile.
+    for(const [id,item] of Object.entries(localPending)){
+      state.cache[id]={voto:Number(item.voto),lode:!!item.lode};
+    }
+    saveJson(LS.cache,state.cache);
+    if(state.current){
+      renderStudents();
+      if(document.getElementById('projectionView').classList.contains('active')) renderProjection();
+    }
+    setSyncStatus('bad',pendingCount() ? `Offline · ${pendingLabel()} · dati locali al sicuro` : 'Errore sincronizzazione · uso copia locale');
+    if(showToast) toast('Cloud non raggiungibile: le modifiche restano sul dispositivo');
+  }finally{
+    state.syncing=false;
+  }
+}
+function setSyncStatus(kind,text){
+  const b=document.getElementById('syncBadge');
+  b.className='badge'+(kind?' '+kind:'');
+  document.getElementById('syncText').textContent=text;
+
+  const btn=document.getElementById('syncBtn');
+  btn.classList.remove('syncing','synced','pending','error','unconfigured');
+
+  const t=String(text||'').toLowerCase();
+
+  if(t.includes('sincronizzazione') || t.includes('reset in sincronizzazione')){
+    btn.classList.add('syncing');
+    btn.title='Sincronizzazione in corso…';
+  }else if(t.includes('sincronizzato')){
+    btn.classList.add('synced');
+    btn.title='Sincronizzato · clicca per forzare';
+  }else if(t.includes('modifica') || t.includes('reset locale') || t.includes('salvato sul dispositivo')){
+    btn.classList.add('pending');
+    btn.title='Modifiche da sincronizzare · clicca per forzare';
+  }else if(t.includes('offline') || t.includes('errore') || t.includes('non raggiungibile')){
+    btn.classList.add('error');
+    btn.title='Cloud non raggiungibile · clicca per riprovare';
+  }else{
+    btn.classList.add('unconfigured');
+    btn.title='Cloud non configurato · clicca per sincronizzare';
+  }
+}
+
+function openSettings(){
+  const {url,key}=getCfg();
+  document.getElementById('apiUrl').value=url;
+  document.getElementById('apiKey').value=key;
+  document.getElementById('size1B').value=state.classSizes['1B'];
+  document.getElementById('size2B').value=state.classSizes['2B'];
+  document.getElementById('size3B').value=state.classSizes['3B'];
+  document.getElementById('settingsModal').style.display='grid';
+}
+function closeSettings(){
+  document.getElementById('settingsModal').style.display='none';
+}
+async function saveSettings(){
+  const url=document.getElementById('apiUrl').value.trim();
+  const key=document.getElementById('apiKey').value.trim();
+
+  const sizes={
+    '1B':Number(document.getElementById('size1B').value),
+    '2B':Number(document.getElementById('size2B').value),
+    '3B':Number(document.getElementById('size3B').value)
+  };
+
+  for(const c of CLASSES){
+    if(!Number.isInteger(sizes[c]) || sizes[c] < 1 || sizes[c] > 25){
+      toast(`Numero studenti ${c}: inserisci un valore da 1 a 25`);
+      return;
+    }
+  }
+
+  if(!url||!key){toast('Inserisci URL e chiave');return}
+  if(!/^https:\/\/script\.google\.com\/macros\/s\/.+\/exec$/.test(url)){
+    toast('Usa l’URL Apps Script completo che termina in /exec');return
+  }
+
+  state.classSizes=sizes;
+  saveJson(LS.classSizes,state.classSizes);
+
+  localStorage.setItem(LS.apiUrl,url);
+  localStorage.setItem(LS.apiKey,key);
+
+  buildHome();
+  if(state.current){
+    document.getElementById('sectionSub').textContent=`${state.classSizes[state.current.classe]} studenti`;
+    renderStudents();
+  }
+
+  closeSettings();
+  await syncFromCloud(true);
+}
+
+
+function renderProjection(){
+  if(!state.current) return;
+
+  const {classe,materia}=state.current;
+  const subj=SUBJECTS.find(x=>x.code===materia);
+  const count=state.classSizes[classe];
+
+  document.getElementById('projTitle').textContent=`${classe} · ${subj.label}`;
+  document.getElementById('projSub').textContent=`${count} valutazioni · solo numeri di registro`;
+
+  const rows=document.getElementById('projRows');
+  rows.style.setProperty('--count',count);
+  rows.innerHTML='';
+
+  for(let n=1;n<=count;n++){
+    const id=makeId(classe,materia,n);
+    const item=state.cache[id] || {voto:8,lode:false};
+    const m=meter(item);
+
+    const row=document.createElement('div');
+    row.className='projRow';
+    const name = state.names[makeNameId(classe,n)] || '';
+
+    row.innerHTML=`
+      <div class="projNum">${n}</div>
+      <div class="projName" title="${escapeHtml(name)}">${escapeHtml(name) || '—'}</div>
+      <div class="projTrack">
+        <div class="projFill"
+          style="width:${m.pct}%;background:hsl(${m.hue} 90% 58%);color:hsl(${m.hue} 90% 58%)">
+        </div>
+      </div>
+      <div class="projGrade ${item.lode?'lode':''}">${gradeLabel(item)}</div>
+    `;
+    rows.appendChild(row);
+  }
+}
+
+async function openProjection(){
+  if(!state.current) return;
+
+  playClick();
+
+  const view=document.getElementById('projectionView');
+  const checkbox=document.getElementById('projShowNames');
+
+  checkbox.checked=false;
+  view.classList.remove('showNames');
+
+  renderProjection();
+
+  view.classList.add('active');
+  view.setAttribute('aria-hidden','false');
+
+  try{
+    if(document.fullscreenElement == null && view.requestFullscreen){
+      await view.requestFullscreen();
+    }
+  }catch(_){
+    // Se il browser blocca il fullscreen, la vista a schermo pieno CSS resta comunque attiva.
+  }
+}
+
+async function closeProjection(){
+  playClick();
+
+  const view=document.getElementById('projectionView');
+  view.classList.remove('active');
+  view.setAttribute('aria-hidden','true');
+
+  try{
+    if(document.fullscreenElement && document.exitFullscreen){
+      await document.exitFullscreen();
+    }
+  }catch(_){}
+}
+
+function toggleEdit(){
+  state.editingNames=!state.editingNames;
+  document.getElementById('editBtn').textContent=state.editingNames?'✓ Fine modifica':'✎ Modifica nomi';
+  renderStudents();
+  if(state.editingNames) toast('Ora puoi modificare i nominativi');
+}
+function askReset(){
+  if(!state.current)return;
+  const subj=SUBJECTS.find(x=>x.code===state.current.materia).label;
+  document.getElementById('confirmText').textContent=
+    `Riportare tutti i ${state.classSizes[state.current.classe]} voti di ${state.current.classe} · ${subj} a 8? I nominativi non verranno cancellati.`;
+  document.getElementById('confirmModal').style.display='grid';
+}
+async function doReset(){
+  document.getElementById('confirmModal').style.display='none';
+  const {classe,materia}=state.current;
+
+  for(let n=1;n<=state.classSizes[classe];n++){
+    const id=makeId(classe,materia,n);
+    const item={voto:8,lode:false};
+    state.cache[id]=item;
+    state.pending[id]=item;
+  }
+
+  saveJson(LS.cache,state.cache);
+  saveJson(LS.pending,state.pending);
+  renderStudents();
+
+  const {url,key}=getCfg();
+  if(!url||!key){
+    setSyncStatus('warn',`RESET locale · ${pendingLabel()}`);
+    toast('RESET salvato sul dispositivo');
+    return;
+  }
+
+  try{
+    setSyncStatus('warn','RESET in sincronizzazione…');
+
+    // Usiamo l'endpoint ottimizzato già disponibile.
+    const r=await fetch(url,{
+      method:'POST',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body:JSON.stringify({key,action:'resetSection',classe,materia}),
+      cache:'no-store'
+    });
+    const j=await r.json();
+    if(!j.ok) throw new Error(j.error||'Errore API');
+
+    // Il reset cloud ha aggiornato tutti i 25 record della sezione:
+    // possiamo rimuoverli dalla coda locale.
+    for(let n=1;n<=25;n++){
+      delete state.pending[makeId(classe,materia,n)];
+    }
+    saveJson(LS.pending,state.pending);
+
+    if(pendingCount()===0){
+      setSyncStatus('ok','RESET sincronizzato');
+    }else{
+      setSyncStatus('warn',pendingLabel());
+    }
+    toast('Tutti i voti della sezione sono tornati a 8');
+  }catch(e){
+    setSyncStatus('bad',`Offline · ${pendingLabel()} · RESET al sicuro sul dispositivo`);
+    toast('RESET salvato localmente: sarà sincronizzato quando torna Internet');
+  }
+}
+
+
+function exportNames(){
+  const payload = {
+    app: 'ITINERE!',
+    type: 'names-backup',
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    classSizes: state.classSizes,
+    names: state.names
+  };
+
+  const blob = new Blob(
+    [JSON.stringify(payload, null, 2)],
+    {type:'application/json;charset=utf-8'}
+  );
+
+  const d = new Date();
+  const date = [
+    d.getFullYear(),
+    String(d.getMonth()+1).padStart(2,'0'),
+    String(d.getDate()).padStart(2,'0')
+  ].join('-');
+
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `ITINERE_nomi_${date}.json`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+
+  toast('Backup nominativi esportato');
+}
+
+function importNames(){
+  document.getElementById('importNamesFile').click();
+}
+
+async function handleNamesImport(file){
+  if(!file) return;
+
+  try{
+    const text = await file.text();
+    const data = JSON.parse(text);
+
+    if(
+      !data ||
+      data.app !== 'ITINERE!' ||
+      data.type !== 'names-backup' ||
+      typeof data.names !== 'object' ||
+      Array.isArray(data.names)
+    ){
+      throw new Error('File non riconosciuto come backup nominativi di ITINERE!');
+    }
+
+    const clean = {};
+    for(const [key,value] of Object.entries(data.names)){
+      if(!/^(1B|2B|3B)_\d{2}$/.test(key)) continue;
+      const n = Number(key.slice(-2));
+      if(n < 1 || n > 25) continue;
+      clean[key] = String(value ?? '').trim().slice(0,120);
+    }
+
+    state.names = clean;
+    saveJson(LS.names,state.names);
+
+    if(data.classSizes && typeof data.classSizes === 'object'){
+      const importedSizes={};
+      for(const c of CLASSES){
+        const n=Number(data.classSizes[c]);
+        importedSizes[c]=Number.isInteger(n) && n>=1 && n<=25 ? n : state.classSizes[c];
+      }
+      state.classSizes=importedSizes;
+      saveJson(LS.classSizes,state.classSizes);
+    }
+
+    buildHome();
+    if(state.current){
+      document.getElementById('sectionSub').textContent=`${state.classSizes[state.current.classe]} studenti`;
+      renderStudents();
+    }
+
+    closeSettings();
+    toast(`Importati ${Object.values(clean).filter(Boolean).length} nominativi`);
+  }catch(e){
+    toast('Importazione fallita: file non valido');
+  }finally{
+    document.getElementById('importNamesFile').value='';
+  }
+}
+
+let toastTimer;
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),2400);
+}
+
+document.getElementById('themeBtn').onclick=()=>{ playClick(); toggleTheme(); };
+document.getElementById('soundBtn').onclick=toggleSound;
+document.getElementById('backBtn').onclick=()=>{ playClick(); goHome(); };
+document.getElementById('settingsBtn').onclick=()=>{ playClick(); openSettings(); };
+document.getElementById('closeSettings').onclick=()=>{ playClick(); closeSettings(); };
+document.getElementById('saveSettings').onclick=()=>{ playClick(); saveSettings(); };
+document.getElementById('exportNamesBtn').onclick=()=>{ playClick(); exportNames(); };
+document.getElementById('importNamesBtn').onclick=()=>{ playClick(); importNames(); };
+document.getElementById('importNamesFile').addEventListener('change',e=>handleNamesImport(e.target.files[0]));
+document.getElementById('syncBtn').onclick=()=>{ playClick(); syncFromCloud(true); };
+document.getElementById('projectBtn').onclick=openProjection;
+document.getElementById('projExit').onclick=closeProjection;
+document.getElementById('projShowNames').addEventListener('change',e=>{
+  playClick();
+  document.getElementById('projectionView').classList.toggle('showNames',e.target.checked);
+});
+document.getElementById('editBtn').onclick=()=>{ playClick(); toggleEdit(); };
+document.getElementById('resetBtn').onclick=()=>{ playClick(); askReset(); };
+document.getElementById('confirmNo').onclick=()=>{ playClick(); document.getElementById('confirmModal').style.display='none'; };
+document.getElementById('confirmYes').onclick=()=>{ playClick(); doReset(); };
+document.getElementById('settingsModal').addEventListener('click',e=>{if(e.target.id==='settingsModal')closeSettings()});
+document.getElementById('confirmModal').addEventListener('click',e=>{if(e.target.id==='confirmModal')e.currentTarget.style.display='none'});
+
+document.addEventListener('fullscreenchange',()=>{
+  if(!document.fullscreenElement){
+    const view=document.getElementById('projectionView');
+    if(view.classList.contains('active')){
+      view.classList.remove('active');
+      view.setAttribute('aria-hidden','true');
+    }
+  }
+});
+
+applyTheme();
+applySoundButton();
+buildHome();
+if(getCfg().url && getCfg().key){
+  syncFromCloud(false);
+}else{
+  setSyncStatus('warn',pendingCount() ? `Cloud non configurato · ${pendingLabel()}` : 'Cloud non configurato');
+}
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./service-worker.js').catch(() => {});
+  });
+}
+</script>
+</body>
+</html>
