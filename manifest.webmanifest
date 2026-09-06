@@ -1,10 +1,10 @@
 {
-  "id": "./",
+  "id": "/itinere/",
   "name": "ITINERE!",
   "short_name": "ITINERE!",
   "description": "Valutazione in itinere personale per Matematica e Scienze.",
   "lang": "it-IT",
-  "start_url": "./index.html",
+  "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "background_color": "#0d1020",
