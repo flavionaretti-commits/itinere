@@ -1,9 +1,8 @@
-const CACHE_NAME = 'itinere-v12-20260906';
+const CACHE_NAME = 'itinere-v13-20260906';
 
 const APP_SHELL = [
   './',
   './index.html',
-  './manifest.webmanifest',
   './icons/apple-touch-icon.png',
   './icons/favicon-32.png'
 ];
@@ -37,7 +36,15 @@ self.addEventListener('fetch', event => {
   // Non interferire con API esterne (Apps Script ecc.)
   if (url.origin !== self.location.origin) return;
 
-  // Per navigazioni e index: rete prima, cache come fallback.
+  // Manifest: sempre rete quando disponibile, per evitare identità PWA obsolete.
+  if (url.pathname.endsWith('/manifest.webmanifest')) {
+    event.respondWith(
+      fetch(req, { cache: 'no-store' }).catch(() => caches.match(req))
+    );
+    return;
+  }
+
+  // Navigazioni e index: rete prima, cache come fallback.
   if (req.mode === 'navigate' || url.pathname.endsWith('/index.html')) {
     event.respondWith(
       fetch(req, { cache: 'no-store' })
@@ -53,7 +60,7 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // Per asset statici: cache prima, aggiornamento in background.
+  // Asset statici: cache prima, aggiornamento in background.
   event.respondWith(
     caches.match(req).then(cached => {
       const network = fetch(req).then(response => {
