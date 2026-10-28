@@ -57,8 +57,9 @@ button,input,select{font:inherit}
 button{cursor:pointer}
 .app{min-height:100vh;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
 .topbar{
- position:sticky;top:0;z-index:20;
+ position:sticky;top:0;z-index:40;
  display:flex;align-items:center;gap:12px;
+ min-height:67px;
  padding:12px 16px;
  background:rgba(10,13,25,.88);
  backdrop-filter:blur(18px);
@@ -208,7 +209,25 @@ body.light .classcard{
 .subject.sci{background:linear-gradient(145deg,#0ba87b,#18b7c7)}
 .sectionView{display:none}
 .sectionHead{
- display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px
+ position:sticky;
+ top:67px;
+ z-index:30;
+ display:flex;
+ align-items:center;
+ gap:10px;
+ flex-wrap:wrap;
+ margin:0 -18px 14px;
+ padding:10px 18px;
+ background:rgba(13,16,32,.94);
+ backdrop-filter:blur(18px);
+ -webkit-backdrop-filter:blur(18px);
+ border-bottom:1px solid rgba(255,255,255,.07);
+ box-shadow:0 8px 18px rgba(0,0,0,.16)
+}
+body.light .sectionHead{
+ background:rgba(223,229,241,.95);
+ border-bottom-color:rgba(70,80,120,.13);
+ box-shadow:0 8px 18px rgba(45,58,95,.08)
 }
 .backbtn,.actionbtn{
  border:1px solid var(--line);background:var(--panel);color:var(--text);
